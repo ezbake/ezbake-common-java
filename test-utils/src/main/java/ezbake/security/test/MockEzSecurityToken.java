@@ -14,18 +14,18 @@
 
 package ezbake.security.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import ezbake.base.thrift.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import ezbake.base.thrift.Authorizations;
+import ezbake.base.thrift.EzSecurityPrincipal;
+import ezbake.base.thrift.EzSecurityToken;
+import ezbake.base.thrift.TokenType;
+import ezbake.base.thrift.ValidityCaveats;
 
-/**
- * User: jhastings
- * Date: 6/18/14
- * Time: 8:21 AM
- */
 public class MockEzSecurityToken {
 
     public static final long defaultTokenExpiration = 60 /* seconds */ * 1000 /* milliseconds */;
@@ -36,15 +36,15 @@ public class MockEzSecurityToken {
     public static final String defaultAuthorizationLevel = "U";
     public static final String EZ_INTERNAL_PROJECT = "_Ez_internal_project_";
     public static final String EZ_INTERNAL_ADMIN_GROUP = "_Ez_administrator";
-    public static final Set<String> defaultAuthorizations = Sets.newHashSet("U");
+    public static final Set<String> defaultAuthorizations = Collections.singleton("U");
     public static final Map<String, List<String>> mockProjectGroups;
     public static final Map<String, List<String>> mockAdminProjectGroups;
 
     static {
-        mockProjectGroups = Maps.newHashMap();
-        mockProjectGroups.put("project 1", Lists.newArrayList("group 1"));
-        mockAdminProjectGroups = Maps.newHashMap();
-        mockAdminProjectGroups.put(EZ_INTERNAL_PROJECT, Lists.newArrayList(EZ_INTERNAL_ADMIN_GROUP));
+        mockProjectGroups = new HashMap<>();
+        mockProjectGroups.put("project 1", Collections.singletonList("group 1"));
+        mockAdminProjectGroups = new HashMap<>();
+        mockAdminProjectGroups.put(EZ_INTERNAL_PROJECT, Collections.singletonList(EZ_INTERNAL_ADMIN_GROUP));
     }
 
     /* -- Just the defaults -- */
@@ -79,7 +79,6 @@ public class MockEzSecurityToken {
         return token;
     }
 
-
     /* -- App Tokens -- */
     public static EzSecurityToken getMockAppToken(String appId) {
         return getMockAppToken(appId, null, null, null, null);
@@ -107,13 +106,10 @@ public class MockEzSecurityToken {
 
         populateAppInfo(ezToken, appId, appPrincipal);
         populateAuthorizations(ezToken, authorizationLevel, authorizations);
-        populateExternalProjectGroups(ezToken, null, false);
+        populateExternalProjectGroups(ezToken, projectGroups, false);
 
         return ezToken;
     }
-
-
-
 
     public static EzSecurityToken getMockEzSecurityToken(String applicationSecurityId,
                                                          String targetApplicationSecurityId,
@@ -129,11 +125,6 @@ public class MockEzSecurityToken {
                                                          boolean admin,
                                                          boolean validForExternalRequests
     ) {
-        HashMap<String, List<String>> map = Maps.newHashMap();
-        if (admin) {
-            map.put(EZ_INTERNAL_PROJECT, Arrays.asList(EZ_INTERNAL_ADMIN_GROUP));
-        }
-
         EzSecurityToken ezToken = new EzSecurityToken();
         ezToken.setValidity(new ValidityCaveats("EzSecurity", applicationSecurityId, System.currentTimeMillis() + tokenExpiration, ""));
         ezToken.getValidity().setIssuedFor(targetApplicationSecurityId);
@@ -150,12 +141,10 @@ public class MockEzSecurityToken {
                 break;
         }
 
-
-
+        populateExternalProjectGroups(ezToken, projectGroups, admin);
 
         return ezToken;
     }
-
 
     /* -- Token Generating and Populating functions -- */
 
@@ -232,7 +221,7 @@ public class MockEzSecurityToken {
      * @param admin if true, admin project groups will be added to the token
      */
     public static void populateExternalProjectGroups(final EzSecurityToken token, Map<String, List<String>> projectGroups, boolean admin) {
-        Map<String, List<String>> pgs = Maps.newHashMap();
+        Map<String, List<String>> pgs = new HashMap<>();
         if (projectGroups != null) {
             pgs.putAll(projectGroups);
         } else {

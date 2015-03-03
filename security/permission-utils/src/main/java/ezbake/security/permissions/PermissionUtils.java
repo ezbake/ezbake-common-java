@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.accumulo.core.security.VisibilityEvaluator;
 import org.apache.accumulo.core.security.VisibilityParseException;
+import org.apache.accumulo.core.util.BadArgumentException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
@@ -191,5 +192,21 @@ public class PermissionUtils {
             }
         }
         return fullVisibility;
+    }
+
+    /**
+     * Checks whether a string represents a valid visibility expression.
+     *
+     * @param visibilityExpression candidate string to check
+     * @return true if the string represents a valid visibility expression, false otherwise
+     */
+    public static boolean isVisibilityExpression(String visibilityExpression) {
+        try {
+            new ColumnVisibility(visibilityExpression);
+        } catch (BadArgumentException e) {
+            return false;
+        }
+
+        return true;
     }
 }

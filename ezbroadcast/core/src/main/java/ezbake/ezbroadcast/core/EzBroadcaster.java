@@ -14,42 +14,48 @@
 
 package ezbake.ezbroadcast.core;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
-import ezbake.base.thrift.EzSecurityToken;
-import ezbake.base.thrift.EzSecurityTokenException;
-import ezbake.base.thrift.Permission;
-import ezbake.base.thrift.Visibility;
-import ezbake.common.openshift.OpenShiftUtil;
-import ezbake.ezbroadcast.core.thrift.SecureMessage;
-import ezbake.security.client.EzSecurityTokenWrapper;
-import ezbake.security.client.EzbakeSecurityClient;
-import ezbake.crypto.PKeyCryptoException;
-import ezbake.crypto.RSAKeyCrypto;
-import ezbake.security.permissions.PermissionUtils;
-import ezbake.thrift.ThriftUtils;
-import org.apache.accumulo.core.security.Authorizations;
-import org.apache.accumulo.core.security.ColumnVisibility;
-import org.apache.accumulo.core.security.VisibilityEvaluator;
-import org.apache.accumulo.core.security.VisibilityParseException;
-import org.apache.accumulo.core.util.BadArgumentException;
-import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.io.Files;
+
+import org.apache.accumulo.core.util.BadArgumentException;
+
+import org.apache.thrift.TException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ezbake.base.thrift.EzSecurityTokenException;
+import ezbake.base.thrift.Permission;
+import ezbake.base.thrift.Visibility;
+import ezbake.common.openshift.OpenShiftUtil;
+import ezbake.crypto.PKeyCryptoException;
+import ezbake.crypto.RSAKeyCrypto;
+import ezbake.ezbroadcast.core.thrift.SecureMessage;
+import ezbake.security.client.EzSecurityTokenWrapper;
+import ezbake.security.client.EzbakeSecurityClient;
+import ezbake.security.permissions.PermissionUtils;
+import ezbake.thrift.ThriftUtils;
 
 public abstract class EzBroadcaster implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(EzBroadcaster.class);

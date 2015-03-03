@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * communicating with INS
  */
 public class INSUtility {
-    private static final Pattern UriPattern = Pattern.compile("(\\w+://[A-Za-z0-9.-]+)(/|$)");
+    private static final Pattern UriPattern = Pattern.compile("(\\w+://[_A-Za-z0-9.-]+)(/|$)");
 
     /**
      * Builds the URI prefix given a category and a key (typically the feed name)

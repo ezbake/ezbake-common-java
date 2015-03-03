@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>ezbake</groupId>
         <artifactId>ezbake-common-security-parent</artifactId>
-        <version>2.1-SNAPSHOT</version>
+        <version>2.1</version>
     </parent>
 
     <artifactId>ezbake-permission-iterator</artifactId>
@@ -23,6 +22,25 @@
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Accumulo uses thrift 0.9.0. Force its use in this project -->
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <!--
+            Accumulo includes a copy of Guava on its classpath. 1.6.0 requires Guava 15.0, but 1.6.1 and 1.6.2 require
+            Guava 14.0.1. Since Google is good about backwards compatibility, prefer the older version. We must
+            explicitly specify a version, otherwise, we get 17.0 as a transitive dependency.
+            -->
+            <version>14.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- EzBake dependencies -->
@@ -33,12 +51,47 @@
         <dependency>
             <groupId>ezbake</groupId>
             <artifactId>ezbake-permission-utils</artifactId>
-            <version>${project.version}</version>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>ezbake</groupId>
             <artifactId>thrift-utils</artifactId>
-            <version>${project.version}</version>
+            <version>2.1</version>
+            <!-- We use thrift-utils only for serialization/deserialization -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-pool2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>crypto-utils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>ezbake-base-thrift-service</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>ezbake-configuration-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>ezbake-discovery-servicediscovery</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>local-zookeeper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbake</groupId>
+                    <artifactId>test-utils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ezbakehelpers</groupId>
+                    <artifactId>ezbakehelpers-ezconfigurationhelpers</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test dependencies -->
@@ -65,13 +118,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <artifactSet>
-                        <excludes>
-                            <exclude>org.apache.accumulo:accumulo-core</exclude>
-                        </excludes>
-                    </artifactSet>
-                </configuration>
             </plugin>
         </plugins>
     </build>

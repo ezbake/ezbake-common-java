@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.google.common.base.Optional;
-import org.apache.accumulo.core.security.Authorizations;
-import org.apache.accumulo.core.security.VisibilityEvaluator;
 
 /**
  * This class is for testing purposes ONLY. It can be used in situations where a broadcaster

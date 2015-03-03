@@ -281,4 +281,16 @@ public class PermissionUtilsTest {
 
         assertEquals("TS&AB&CD", PermissionUtils.getVisibilityString(visibility));
     }
+
+    @Test
+    public void testIsVisibilityExpression() {
+        assertTrue(PermissionUtils.isVisibilityExpression("A"));
+        assertTrue(PermissionUtils.isVisibilityExpression("A&B"));
+        assertTrue(PermissionUtils.isVisibilityExpression("A|B"));
+        assertTrue(PermissionUtils.isVisibilityExpression(""));
+        assertFalse(PermissionUtils.isVisibilityExpression("A|"));
+        assertFalse(PermissionUtils.isVisibilityExpression("|A"));
+        assertFalse(PermissionUtils.isVisibilityExpression("A|B&C"));
+        assertFalse(PermissionUtils.isVisibilityExpression("!A"));
+    }
 }

@@ -14,28 +14,30 @@
 
 package ezbake.thrift;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import ezbake.base.thrift.EzSecurityToken;
 import ezbake.security.test.MockEzSecurityToken;
-
-import java.util.*;
 
 /**
  * Test Utilities related to interacting with Thrift and the Ezbake libraries
  */
 public class ThriftTestUtils {
-    @VisibleForTesting
     /**
      * Create a security token for testing.  Since this isn't actually signed, it won't work in production but
      * should pass unit test
      */
     public static EzSecurityToken generateTestSecurityToken(String... auths) {
         //For backwards compatibility
-        return generateTestSecurityToken("DatasetsTest", "DatasetsTest", Lists.newArrayList(auths));
+        return generateTestSecurityToken("DatasetsTest", "DatasetsTest", Arrays.asList(auths));
     }
 
-    public static EzSecurityToken generateTestSecurityToken(String securityId, String targetSecurityId, List<String> auths) {
+    public static EzSecurityToken generateTestSecurityToken(String securityId, String targetSecurityId, final Collection<String> auths) {
         // Projects/Groups
         Map<String, List<String>> projects = new HashMap<String, List<String>>();
         projects.put("EzBake", Arrays.asList("EzBakePlatform"));
@@ -47,6 +49,4 @@ public class ThriftTestUtils {
         token.getValidity().setIssuer("EzSecurity");
         return token;
     }
-
-
 }

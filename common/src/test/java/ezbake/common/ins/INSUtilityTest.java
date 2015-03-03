@@ -66,4 +66,9 @@ public class INSUtilityTest {
     public void testBuildUriPrefix() {
         assertEquals("SOCIAL://twitter/", INSUtility.buildUriPrefix("SOCIAL", "twitter"));
     }
+
+    @Test
+    public void testSpaceInUri() {
+        assertEquals("TRACKS://TRACK_FEED/", INSUtility.getUriPrefix("TRACKS://TRACK_FEED/TEST RECORD-123456789"));
+    }
 }
