@@ -287,7 +287,7 @@ public class ThriftUtils {
     }
 
     protected static TProtocol getProtocol(HostAndPort hostAndPort, String securityId, Properties properties) throws Exception {
-        return getProtocol(hostAndPort, null, properties, null);
+        return getProtocol(hostAndPort, securityId, properties, null);
     }
 
     protected static TProtocol getProtocol(HostAndPort hostAndPort, String securityId, Properties properties, TTransportFactory transportFactory) throws Exception {
